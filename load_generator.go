@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/rand"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -40,6 +41,7 @@ type LoadGeneratorConfig struct {
 	MaxWorkers              int
 	StayProbability         float64
 	ThinkTime               time.Duration
+	MaxRequests             uint64
 }
 
 func (lgc *LoadGeneratorConfig) validate() error {
@@ -62,6 +64,8 @@ type LoadGenerator struct {
 
 	arrivalJitter int64
 	sleepFor      int64
+
+	nRequests atomic.Uint64
 
 	workLogger WorkLogger
 
@@ -144,6 +148,12 @@ func (lg *LoadGenerator) doWork(ctx context.Context, cancel context.CancelFunc, 
 		workId := WorkId{
 			WorkerId:  workerId,
 			RequestId: i,
+		}
+
+		if lg.cfg.MaxRequests > 0 {
+			if n := lg.nRequests.Add(1); n > lg.cfg.MaxRequests {
+				return
+			}
 		}
 
 		start := time.Now()
