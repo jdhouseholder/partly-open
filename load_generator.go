@@ -101,7 +101,11 @@ func NewLoadGeneratorWithRand(
 	if err := cfg.validate(); err != nil {
 		return nil, err
 	}
-	sleepFor := int64(1_000_000_000. / cfg.MeanNewWorkersPerSecond)
+
+	var sleepFor int64
+	if cfg.MeanNewWorkersPerSecond <= 1_000_000_000 {
+		sleepFor = int64(1_000_000_000. / cfg.MeanNewWorkersPerSecond)
+	}
 	arrivalJitter := cfg.ArrivalJitter.Nanoseconds()
 
 	if arrivalJitter > sleepFor {
