@@ -1,4 +1,4 @@
-Partly-Open, a simple work load generator
+Partly-Open, a simple workload generator
 ---
 Based on "Open Versus Closed: A Cautionary Tale"
 <https://www.usenix.org/legacy/event/nsdi06/tech/full_papers/schroeder/schroeder.pdf>.
