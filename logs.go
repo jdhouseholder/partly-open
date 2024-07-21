@@ -39,9 +39,5 @@ func NewJsonLogger(w io.Writer) *JsonLogger {
 }
 
 func (m *JsonLogger) Log(w WorkLogEntry) error {
-	if err := json.NewEncoder(m.w).Encode(w); err != nil {
-		return err
-	}
-	_, err := m.w.Write([]byte{'\n'})
-	return err
+	return json.NewEncoder(m.w).Encode(w)
 }
