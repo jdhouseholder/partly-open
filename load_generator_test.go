@@ -5,18 +5,18 @@ import (
 	"testing"
 )
 
-type NopDoWork struct{}
-
-func (d *NopDoWork) DoWork(context.Context, WorkId) error { return nil }
-
 func TestGenerateLoad(t *testing.T) {
 	cfg := LoadGeneratorConfig{
 		MeanNewWorkersPerSecond: 1,
 		MaxWorkers:              1,
 	}
 	logger := &MemLogger{}
-	doWorker := &NopDoWork{}
-	lg, err := NewLoadGenerator(&cfg, logger, doWorker)
+	nopDoWork := func(context.Context, WorkId) error { return nil }
+	lg, err := NewLoadGeneratorFromDoWorkFunc(
+		&cfg,
+		logger,
+		nopDoWork,
+	)
 	if err != nil {
 		t.Fatal(err)
 	}

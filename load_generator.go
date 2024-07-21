@@ -70,6 +70,15 @@ type LoadGenerator struct {
 	err      error
 }
 
+func NewLoadGeneratorFromDoWorkFunc(
+	cfg *LoadGeneratorConfig,
+	workLogger WorkLogger,
+	dwf DoWorkFunc,
+) (*LoadGenerator, error) {
+	r := rand.New(rand.NewSource(0))
+	return NewLoadGeneratorWithRand(cfg, r, workLogger, DoWorker(dwf))
+}
+
 func NewLoadGenerator(
 	cfg *LoadGeneratorConfig,
 	workLogger WorkLogger,
