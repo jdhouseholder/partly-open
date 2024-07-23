@@ -2,6 +2,7 @@ package partly_open
 
 import (
 	"context"
+	"errors"
 	"testing"
 )
 
@@ -33,6 +34,28 @@ func TestGenerateLoad(t *testing.T) {
 	}
 	if got := logEntry.WorkId.RequestId; got != 0 {
 		t.Fatalf("logEntry.WorkerId.RequestId: got=%v, want=%v", got, 0)
+	}
+}
+
+func TestError(t *testing.T) {
+	cfg := LoadGeneratorConfig{
+		MeanNewWorkersPerSecond: 1,
+		MaxWorkers:              1,
+	}
+	logger := &MemLogger{}
+	err := errors.New("test error")
+	nopDoWork := func(context.Context, WorkId) error { return err }
+	lg, err := NewLoadGeneratorFromDoWorkFunc(
+		&cfg,
+		logger,
+		nopDoWork,
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if got := lg.GenerateLoad(context.TODO()); got != err {
+		t.Fatalf("Expected err: got=%v, want=%v", got, err)
 	}
 }
 
